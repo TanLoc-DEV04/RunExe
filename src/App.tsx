@@ -1,38 +1,60 @@
-import { useState } from "react";
-import type { ComponentType, ReactNode } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import RawLayout from "./layout/Layout.jsx";
+import { useState } from 'react';
+import { Tabs, Layout, Typography, ConfigProvider, theme } from 'antd';
+import { getFullSchedule } from './data/schedule';
+import DayView from './components/DayView';
+import './App.css';
 
-const Layout = RawLayout as ComponentType<{ children?: ReactNode }>;
+const { Header, Content, Footer } = Layout;
+const { Title } = Typography;
 
 function App() {
-  const [count, setCount] = useState(0);
+  const schedule = getFullSchedule();
+  const today = new Date().getDay();
+  // Map JS Date day (0=Sun, 1=Mon...) to our IDs.
+  // 0 (Sun) -> 'sun' (index 6 in our array)
+  // 1 (Mon) -> 'mon' (index 0)
+  const todayKey = schedule[today === 0 ? 6 : today - 1]?.id || 'mon';
+  
+  const [activeTab, setActiveTab] = useState(todayKey);
+
+  const items = schedule.map((day) => ({
+    key: day.id,
+    label: day.dayName,
+    children: <DayView dayPlan={day} />,
+  }));
 
   return (
-    <Layout>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </Layout>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#1890ff',
+        },
+      }}
+    >
+      <Layout style={{ minHeight: '100vh' }}>
+        <Header style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          padding: '0 16px',
+          background: '#fff',
+          borderBottom: '1px solid #f0f0f0' 
+        }}>
+          <Title level={3} style={{ margin: 0 }}>GymExe</Title>
+        </Header>
+        <Content style={{ padding: '16px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+          <Tabs 
+            activeKey={activeTab} 
+            onChange={setActiveTab} 
+            items={items} 
+            centered 
+            type="card"
+          />
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>GymExe ©{new Date().getFullYear()} Created for You</Footer>
+      </Layout>
+    </ConfigProvider>
   );
 }
 

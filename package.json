@@ -1,11 +1,12 @@
 {
-  "name": "my-react-app",
+  "name": "run-exe",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://TanLoc-DEV04.github.io/RunExe",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",  
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
